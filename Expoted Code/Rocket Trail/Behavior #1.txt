@@ -1,0 +1,12 @@
+* Always
+	 Missile : Bring to front
+	New Objects : Create Rocket Trail at (0,0) from Missile
+	 Rocket Trail : Bring to back
+
+* Always
+	Rocket Trail : Add 10 to Alterable Value A
+	 Rocket Trail : Set alpha-blending coefficient to Alterable Value A( "Rocket Trail" )
+
+* Alterable Value A of Rocket Trail > 250
+	Rocket Trail : Destroy
+

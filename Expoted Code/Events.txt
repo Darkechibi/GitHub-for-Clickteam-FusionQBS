@@ -1,0 +1,821 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<DocType>Source Code</DocType>
+<CurrentDateStamp>Friday August 2 2024 3:22 PM
+<GameName></GameName>
+<CodeName>Bomb Shotters</CodeName>
+<version>PREALPHA version0.0003</version>
+<NOTES>this is the ouput from the "export to text" option in ClickTeam Fusion 2.5+ 
+<BEGINSOURCECODE>
+
+// the player sits centered of the screen wiht a left to right rotating cannon the emits a "laser" each thing destroyed creates a chain reaction explosion, on the ground are targets (cities obstinsevly) that can be destroyed by enemy fire  that targets the "cities", they must not be destroyed or its game over (8 cities)... the player has a heat and and cannot fire if over heated, other resources and limitations for movemnt and alternative fire exist,
+// First is a missile "bomb" which creates an explosion  that has large destruction. A tracking missile (devving) that goes to the nearest enemy. and the ability to move in short hops to redeploy a  positioning of the beam.
+// 
+// the enemy "flies overhead" from the left or right of the screen at semi variable speeds and they "target" the cities... much of it pure random... the game goes until a wave ends or the cities have all been elimated. enemy shots come in from above, these photon shot are minor damage but onstant harrass. 
+// 
+
+* Start of Frame
+	eshot1 : Set speed to Random(25) + 75
+	eshot2 : Set speed to Random(25) + 75
+	eshot3 : Set speed to Random(25) + 75
+	eshot4 : Set speed to Random(25) + 75
+	energyshield : Destroy
+	plyershoot : Set control to 100
+	plyershoot : Set resource to 100
+	playerbase : Set hp to 100
+	plyershoot 2 : Set hp to 500
+	 Sound : Play sample Skyfall on channel #48, 0 times
+	 Sound : Set volume of sample Skyfall (uninteruptable) to 100
+	 Sound : Set main volume to 100
+	 playerbase : Add to debugger
+
+* Always
+	plyershoot : Set playerhpval to hp( "plyershoot 2" )
+	Hp Bar : Set Counter to playerhpval( "plyershoot" )
+	Counter 2 : Set Counter to control( "plyershoot" )
+
+* playerbase is in the play area 
++ NOT Active 3 is overlapping playerbase
+	New Objects : Create Active 3 at (0,0) from playerbase
+
+[ player ]
+
+	* Every 00''-01
+		misslebombcharge : Add 1 to Counter
+		plyershoot : Sub 1 from control
+
+	* Upon pressing "Space bar"
+	+ Number of missbomtarget <= 5
+	+ misslebombcharge = 50
+		New Objects : Create missbomtarget at (0,0) from plyrcursor
+		plyershoot 2 : Launch misslebomb at speed 50 toward (0,0) from missbomtarget
+		misslebombcharge : Set Counter to 0
+
+	* Repeat while left mouse-key is pressed
+	+ Laser Heat <= 99
+	+ Restrict actions for 00''-05
+		 Sound : Set volume of sample laserShoot to 20
+		Laser Heat : Add 0.5 to Counter
+		 Sound : Play sample laserShoot (uninteruptable) on channel #47
+		Special : Start loop "shoot" 1 times
+
+	* NOT Repeat while left mouse-key is pressed
+	+ Restrict actions for 00''-01
+		Laser Heat : Subtract 1 from Counter
+		Active : Destroy
+
+	* Repeat while left mouse-key is pressed
+	+ Laser Heat <= 99
+	+ Restrict actions for 01''-10
+		New Objects : Create Active at (0,-5) from plyershoot 2
+
+	* Every 00''-02
+		playerbase : Set istarget to Random(25)
+		plyershoot 2 : Set istarget to Random(25)
+
+	* istarget of playerbase >= 12
+		New Objects : Create playertargetmarker at (1,1) from playerbase
+
+	* istarget of playerbase <= 11
+	+ playertargetmarker is overlapping playerbase
+		playertargetmarker : Destroy
+
+	* istarget of plyershoot 2 >= 12
+		New Objects : Create playertargetmarker at (1,0) from plyershoot 2
+
+	* istarget of plyershoot 2 <= 11
+	+ playertargetmarker is overlapping plyershoot 2
+		playertargetmarker : Destroy
+
+	* Collision between misslebomb and missbomtarget
+	+ Alterable Value A( "misslebomb" ) = Alterable Value A( "missbomtarget" )
+		 Sound : Set volume of sample explosion-36210 to 20
+		missbomtarget : Destroy
+		misslebomb : Destroy
+		New Objects : Create lrgexplosion at (0,0) from misslebomb
+		New Objects : Create Active 4 at (0,0) from misslebomb
+		Active 4 : Set Alterable Value A to 25
+		 Sound : Play sample explosion-36210 (uninteruptable) on channel #40
+
+	* shieldcharge = 100
+	+ Upon pressing "Z"
+		New Objects : Create energyshield at (0,-16) from plyershoot 2
+		shieldcharge : Set Counter to 0
+		energyshield : Set Alterable Value A to 20
+
+	* Restrict actions for 00''-01
+
+	* plyrcursor 2 is in the play area 
+		plyrcursor 2 : Destroy
+
+	* plyrcursor is in the play area 
+	+ Restrict actions for 00''-05
+		New Objects : Create plyrcursor 2 at (1,0) from plyrcursor
+
+	* Collision between plyershoot 2 and Ground
+		plyershoot 2 : Stop
+
+	* control of plyershoot <= 0
+		plyershoot : Set control to 0
+
+	* hp of plyershoot 2 < 1
+		misslebombcharge : Set Counter to 0
+		misslebombcharge : Destroy
+		shieldcharge : Set Counter to 0
+		shieldcharge : Destroy
+		Laser Heat : Set Counter to 0
+		Laser Heat : Destroy
+		plyrcursor : Destroy
+		Active : Destroy
+		plyershoot 2 : Destroy
+
+	* playerhpval of plyershoot <= 0
+		plyrcursor 2 : Destroy
+		Active : Destroy
+		misslebombcharge : Set Counter to 0
+		misslebombcharge : Destroy
+		shieldcharge : Set Counter to 0
+		shieldcharge : Destroy
+		Laser Heat : Set Counter to 0
+		Laser Heat : Destroy
+		plyrcursor : Destroy
+
+	* Always
+		plyrcursor : Set X position to XMouse
+		plyrcursor : Set Y position to YMouse
+
+	* Start of Frame
+		The mouse pointer and keyboard : Hide Windows mouse pointer
+
+	* Always
+		Active : Set position at (0,0) from plyershoot 2
+
+	* Alterable Value A of Active 4 = 0
+		Active 4 : Destroy
+
+	* Active 4 is in the play area 
+		Active 4 : Sub 1 from Alterable Value A
+		Start loop for each one of Active 4, loop name "sound"
+
+	* Alterable Value A of Active 4 >= 1
+		 Active 4 : Set X scale to XScale( "Active 4" ) - 0.05 (Quality = 0)
+
+[ enemy ]
+
+	* 1 chances out of 30 at random
+	+ Restrict actions for 04''-00
+		eshot1 : Add 1 to Alterable Value B
+
+	* Alterable Value B of eshot1 >= 2
+		eshot1 : Set Alterable Value B to 0
+
+	* Alterable Value B of eshot1 = 0
+		eshot1 : Start
+
+	* Alterable Value B of eshot1 = 1
+	+ control of plyershoot <= 1
+		eshot1 : Launch photonshot at speed 25 toward (0,0) from playertargetmarker
+		eshot1 : Add 1 to Alterable Value B
+		eshot1 : Stop
+
+	* eshot1 is getting closer than 5 pixels from window's edge
+		eshot2 : Set speed to Random(25) + 75
+
+	* Alterable Value B of eshot2 >= 2
+		eshot2 : Set Alterable Value B to 0
+
+	* Alterable Value B of eshot2 = 0
+		eshot2 : Start
+
+	* control of plyershoot <= 1
+	+ Alterable Value B of eshot2 = 1
+		eshot2 : Launch photonshot at speed 25 toward (0,0) from playertargetmarker
+		eshot2 : Add 1 to Alterable Value B
+		eshot2 : Stop
+
+	* eshot2 is getting closer than 5 pixels from window's edge
+		eshot2 : Set speed to Random(25) + 75
+
+	* 1 chances out of 25 at random
+	+ Restrict actions for 04''-00
+		eshot2 : Add 1 to Alterable Value B
+
+	* photonshot is overlapping plyershoot 2
+		photonshot : Destroy
+		plyershoot : Sub 15 from resource
+		New Objects : Create photonexplosion at (1,0) from plyershoot 2
+		plyershoot 2 : Sub 15 from hp
+
+	* Alterable Value B of eshot3 >= 2
+		eshot3 : Set Alterable Value B to 0
+
+	* Alterable Value B of eshot3 = 0
+		eshot3 : Start
+
+	* control of plyershoot <= 1
+	+ Alterable Value B of eshot2 = 1
+		eshot3 : Launch photonshot at speed 25 toward (0,0) from playertargetmarker
+		eshot3 : Add 1 to Alterable Value B
+		eshot3 : Stop
+
+	* eshot3 is getting closer than 5 pixels from window's edge
+		eshot3 : Set speed to Random(10) + 90
+
+	* 1 chances out of 25 at random
+	+ Restrict actions for 07''-00
+		eshot3 : Add 1 to Alterable Value B
+
+	* bombshooter is in the play area 
+		Start loop for each one of bombshooter, loop name "bombdrop"
+
+	* Collision between photonshot and playerbase
+		 Sound : Set volume of sample musket-explosion-6383 to 20
+		New Objects : Create photonexplosion at (0,0) from photonshot
+		playerbase : Sub 20 from hp
+		Sound : Play sample musket-explosion-6383
+		photonshot : Destroy
+
+	* photonshot enters the play area on the top, left or right
+	+ control of plyershoot >= 1
+		photonshot : Destroy
+
+	* On each one of bombshooter, loop name "bombdrop"
+	+ Alterable Value K of bombshooter = 1
+	+ Only one action when event loops
+		New Objects : Create dropbomb at (0,0) from bombshooter
+		dropbomb : Set direction to ..................
+
+	* On each one of bombshooter, loop name "bombdrop"
+	+ Every 00''-30
+		bombshooter : Set Alterable Value K to RRandom(1, 20)
+
+* Alterable Value B of eshot4 >= 2
+	eshot4 : Set Alterable Value B to 0
+
+* Alterable Value B of eshot4 = 0
+	eshot4 : Start
+
+* Alterable Value B of eshot4 = 1
+	eshot4 : Launch photonshot at speed 25 toward (0,0) from playertargetmarker
+	eshot4 : Add 1 to Alterable Value B
+	eshot4 : Stop
+
+* eshot4 is getting closer than 5 pixels from window's edge
+	eshot4 : Set speed to Random(50) + 50
+
+* 1 chances out of 25 at random
++ Restrict actions for 04''-00
+	eshot4 : Add 1 to Alterable Value B
+
+[ visual effects ]
+
+	* shieldcharge <= 99
+		shieldcharge : Add 1 to Counter
+
+	* energyshield is in the play area 
+		energyshield : Sub 1 from Alterable Value A
+
+	* Alterable Value A of energyshield <= 0
+		energyshield : Destroy
+
+	* Collision between photonshot and energyshield
+		photonshot : Destroy
+		New Objects : Create photonexplosion at (0,0) from photonshot
+		Score : Add pval( "photonshot" ) to Counter
+
+	* Collision between lrgexplosion and photonshot
+		photonshot : Destroy
+		New Objects : Create photonexplosion at (0,0) from photonshot
+		Score : Add pval( "photonshot" ) to Counter
+
+	* photonshot is in the play area 
+	+ Every 00''-05
+		New Objects : Create photontrail at (0,0) from photonshot
+
+	* photontrail is overlapping photonshot
+		photontrail : Set direction to Dir( "photonshot" )
+		photontrail : Set Alterable Value A to 5
+		 photonshot : Move in front of object photontrail
+
+	* Alterable Value A of photontrail >= 0
+		photontrail : Sub 1 from Alterable Value A
+
+	* Alterable Value A of photontrail <= 0
+		photontrail : Destroy
+
+	* photonexplosion animation Stopped is over
+		photonexplosion : Destroy
+
+	* Collision between dropbomb and energyshield
+		dropbomb : Destroy
+		 Sound : Set volume of sample explosion-91872 to 20
+		New Objects : Create lrgexplosion at (0,0) from dropbomb
+		Score : Add pval( "dropbomb" ) to Counter
+		 Sound : Play sample explosion-91872 on channel #44
+
+	* Collision between dropbomb and energyshield
+		dropbomb : Destroy
+		New Objects : Create lrgexplosion at (0,0) from dropbomb
+		Score : Add pval( "dropbomb" ) to Counter
+		 Sound : Set volume of sample explosion-91872 to 20
+		 Sound : Play sample explosion-91872 on channel #44
+
+	* photontrail is overlapping Group.Explosions
+		photontrail : Destroy
+
+* NOT playertargetmarker is overlapping playerbase
+	playertargetmarker : Destroy
+
+* photonshot is overlapping playertargetmarker
+	playertargetmarker : Destroy
+
+* Collision between photonshot and Ground
+	photonshot : Destroy
+	New Objects : Create photonexplosion at (0,0) from photonshot
+
+* Repeat while "W" is pressed
++ ismoveable of plyershoot 2 <= 30
++ plyershoot 2: Flag 0 is off
+	plyershoot 2 : Set Y position to Y( "plyershoot 2" ) - 2
+	plyershoot 2 : Add 1 to ismoveable
+
+* NOT Repeat while "W" is pressed
++ NOT plyershoot 2 is overlapping Ground
+	plyershoot 2 : Set Y position to Y( "plyershoot 2" ) + 1
+	plyershoot 2 : Sub 1 from ismoveable
+
+* Repeat while "W" is pressed
+	plyershoot 2 : Set Y position to Y( "plyershoot 2" ) + 1
+
+* plyershoot 2: Flag 0 is on
+	plyershoot 2 : Set Y position to Y( "plyershoot 2" ) + 1
+
+* ismoveable of plyershoot 2 >= 31
+	 plyershoot 2 : Set Flag 0 on
+
+* ismoveable of plyershoot 2 <= 0
+	 plyershoot 2 : Set Flag 0 off
+	plyershoot 2 : Set ismoveable to 0
+
+* plyershoot 2 is overlapping Ground
+	 plyershoot 2 : Set Flag 0 off
+	plyershoot 2 : Set Y position to Y( "plyershoot 2" ) - 1
+
+* Repeat while "W" is pressed
++ plyershoot 2: Flag 0 is off
++ ismoveable of plyershoot 2 >= 1
++ ismoveable of plyershoot 2 <= 30
++ Repeat while "D" is pressed
++ NOT plyershoot 2 is overlapping laserpalacestop 2
+	plyershoot 2 : Set X position to X( "plyershoot 2" ) + 1
+
+* Repeat while "W" is pressed
++ plyershoot 2: Flag 0 is off
++ ismoveable of plyershoot 2 <= 30
++ ismoveable of plyershoot 2 >= 1
++ NOT plyershoot 2 is overlapping laserpalacestop
++ Repeat while "A" is pressed
+	plyershoot 2 : Set X position to X( "plyershoot 2" ) - 1
+
+* Collision between dropbomb and Ground
+	dropbomb : Bounce
+	dropbomb : Add 12 to Alterable Value A
+
+* Alterable Value A of dropbomb >= 1
++ dropbomb: Flag 0 is on
+	dropbomb : Sub 1 from Alterable Value A
+
+* Alterable Value A of dropbomb <= 0
++ dropbomb is overlapping Ground
+	New Objects : Create Active 2 at (0,0) from dropbomb
+	dropbomb : Destroy
+	New Objects : Create lrgexplosion at (0,0) from dropbomb
+
+* Every 00''-40
+	vessel creator 2 : Set Alterable Value A to RRandom(1, 3)
+	vessel creator 2 : Set speed to Random(50) + 150
+	vessel creator : Set Alterable Value A to RRandom(1, 3)
+	vessel creator : Set speed to Random(50) + 150
+	 vessel creator : Add to debugger
+	 vessel creator 2 : Add to debugger
+
+* Collision between playertargetmarker and playerbase
++ Alterable Value A of vessel creator 2 = 1
++ Restrict actions for 01''-00
++ control of plyershoot <= 1
+	vessel creator 2 : Launch bombshooter toward ........ at speed 25
+
+* bombshooter enters the play area on the right
+	bombshooter : Set speed to Random(35) + 30
+
+* bombshooter is overlapping lrgexplosion
+	New Objects : Create lrgexplosion at (0,1) from bombshooter
+	bombshooter : Destroy
+	 Sound : Set volume of sample deep-boom-95839 to 20
+	 Sound : Play sample deep-boom-95839 on channel #45
+
+* Collision between dropbomb and playerbase
+	dropbomb : Destroy
+	New Objects : Create lrgexplosion at (0,0) from dropbomb
+	playerbase : Sub 30 from hp
+	 Sound : Set volume of sample deep-boom-95839 to 20
+	 Sound : Play sample deep-boom-95839 on channel #45
+
+* hp of plyershoot 2 <= 0
+	plyershoot 2 : Destroy
+
+* Collision between dropbomb and plyershoot 2
+	plyershoot 2 : Sub 15 from hp
+	New Objects : Create lrgexplosion at (0,0) from dropbomb
+	 Sound : Set volume of sample explosion-91872 to 20
+	 Sound : Play sample explosion-91872 on channel #44
+
+* bombshooter is in the play area 
+	New Objects : Create photontrail at (0,0) from bombshooter (located)
+
+* hp of playerbase <= 0
++ playerbase is in the play area 
+	Start loop for each one of playerbase, loop name "dead"
+	Active 3 : Destroy
+
+* On each one of playerbase, loop name "dead"
++ hp of playerbase <= 0
+	playerbase : Destroy
+
+* photontrail is out of the play area 
+	photontrail : Destroy
+
+* lrgexplosion is out of the play area 
+	lrgexplosion : Destroy
+
+* lrgexplosion animation Stopped is over
+	lrgexplosion : Destroy
+
+// fast guys
+// 
+
+* Collision between playertargetmarker and playerbase
++ Alterable Value A of vessel creator = 1
++ Restrict actions for 01''-00
++ control of plyershoot <= 1
+	vessel creator : Launch bombshooter toward ............ at speed 25
+
+[ spawning ]
+
+	// spawning logics for the left and right "ship spawners"
+	// 
+
+	* On each one of vessel creator, loop name "fast guys"
+	+ Alterable Value A of vessel creator = 2
+	+ control of plyershoot <= 1
+	+ Only one action when event loops
+		New Objects : Create speedy at (0,0) from vessel creator
+		 speedy : Set scale to 2.0 (Quality = 0)
+		speedy : Set speed to 100
+		speedy : Start
+
+	* On each one of vessel creator 2, loop name "fast guys"
+	+ Alterable Value A of vessel creator 2 = 2
+	+ control of plyershoot <= 1
+	+ Only one action when event loops
+		New Objects : Create speedy at (0,0) from vessel creator 2
+		 speedy : Set scale to 2.0 (Quality = 0)
+		speedy : Set speed to 100
+		speedy : Start
+
+* speedy is overlapping Active 3
++ Active 3 is overlapping playerbase
+	Start loop for each one of speedy, loop name "zap"
+
+* On each one of speedy, loop name "zap"
++ shouldfireon1 of speedy = 1
+	 speedy : Set Flag 2 on
+
+* speedy: Flag 2 is on
++ payloadtime of speedy >= 1
++ Only one action when event loops
+	New Objects : Create rainbeam at (0,300) from speedy (action point)
+	speedy : Set speed to 5
+	speedy : Sub 1 from payloadtime
+
+* payloadtime of speedy <= 0
+	speedy : Set speed to 255
+	 speedy : Set Flag 2 off
+
+* speedy leaves the play area on the right
+	speedy : Destroy
+
+* speedy is overlapping Active 3
++ Only one action when event loops
+	speedy : Set shouldfireon1 to RRandom(1, 2)
+
+* payloadtime of speedy <= 0
++ rainbeam is overlapping speedy
+	rainbeam : Destroy
+
+* playerbase is overlapping Ground
+	Special : Start loop "pushup" 80 times
+
+* Active 4 is in the play area 
++ Every 00''-20
+	 Active 4 : Set alpha-blending coefficient to RRandom(100, 200)
+
+* rainbeam is overlapping playerbase
+	playerbase : Sub 1 from hp
+
+* bombshooter enters the play area on the left
+	bombshooter : Set speed to Random(35) + 30
+
+* Collision between Group.Explosions and Group.Bad
+	Group.Bad : Destroy
+	New Objects : Create lrgexplosion at (0,0) from Group.Bad
+
+* On each one of Active 4, loop name "sound"
+
+* Alterable Value A of vessel creator 2 = 2
++ control of plyershoot <= 1
+	Start loop for each one of vessel creator 2, loop name "fast guys 2"
+
+* Alterable Value A of vessel creator = 2
++ control of plyershoot <= 1
+	Start loop for each one of vessel creator, loop name "fast guys"
+
+* On each one of vessel creator 2, loop name "fast guys 2"
++ NOT speedy is overlapping vessel creator 2
++ Restrict actions for 01''-00
+	New Objects : Create speedy at (0,0) from vessel creator 2
+
+* On each one of vessel creator, loop name "fast guys"
++ NOT speedy is overlapping vessel creator 2
++ Restrict actions for 01''-00
+	New Objects : Create speedy at (0,0) from vessel creator
+
+[ citybases ]
+
+	// Here we deply the enemy primary goal and the players charge, the cities of the region
+	// 
+
+	* On loop "pushup"
+	+ playerbase is overlapping Ground
+		playerbase : Set Y position to Y( "playerbase" ) - 1
+
+	* On loop "pushup"
+	+ NOT playerbase is overlapping Ground
+		Special : Stop loop "pushup"
+
+* Always
+
+* rainbeam is in the play area 
++ NOT speedy is overlapping rainbeam
+	rainbeam : Destroy
+
+* Always
+	Start loop for each one of Group.Bad, loop name "find target"
+
+* On each one of Group.Bad, loop name "find target"
+	 Group.Bad : Set enemyval off
+
+* Always
+
+* control of plyershoot <= 0
+	String : Destroy
+
+[ homing shot ]
+
+	[ Shoot / Move Missile ]
+
+		* On loop "missile"
+			Sound : Play sample Shoot Rocket
+			New Objects : Create Missile at (-32,-32) layer 1
+			Missile : Set X position to X( "plyershoot 2" )
+			Missile : Set Y position to Y( "plyershoot 2" )
+			 Missile : Set Flag 1 off
+
+		* Repeat while right mouse-key is pressed
+		+ Number of Missile < 5
+		+ misslebombcharge >= 45
+			misslebombcharge : Subtract 25 from Counter
+			Special : Start loop "missile" 1 times
+			 Missile : Move to layer 2
+
+		* Collision between Missile and lrgexplosion
+			New Objects : Create lrgexplosion at (0,0) from Missile
+			Missile : Destroy
+
+		* Missile is getting closer than -16 pixels from window's edge
+			Missile : Destroy
+
+		* Collision between Missile and Missile
+			Missile : Bounce
+
+	[ Missile - what to track and when ]
+
+		* Missile is in the play area 
+			Start loop for each one of Missile, loop name "track"
+
+		* On each one of Missile, loop name "track"
+		+ Missile: Flag 1 is on
+			Missile : Look at (0,0) from Group.Bad
+			 Missile : Apply impulse, force 1, angle OAngle( "Missile", X( "Group.Bad" ), Y( "Group.Bad" ) ) degrees
+
+		* On each one of Missile, loop name "track"
+		+ Missile: Flag 1 is off
+			Missile : Look at (0,0) from plyrcursor
+			 Missile : Apply impulse, force 1, angle OAngle( "Missile", X( "plyrcursor" ), Y( "plyrcursor" ) ) degrees
+
+		* Group.Bad is in the play area 
+			 Missile : Set Flag 1 on
+
+		* Number of Group.Bad = 0
+			 Missile : Set Flag 1 off
+
+		* On each one of Missile, loop name "track"
+		+ Collision between Missile and Group.Bad
+			Missile : Destroy
+			New Objects : Create lrgexplosion at (0,0) from Missile
+
+		* On each one of Missile, loop name "track"
+		+ Collision between Missile and speedy
+			Score : Add pval( "speedy" ) to Counter
+
+		* On each one of Missile, loop name "track"
+		+ NOT Rocket Trail is overlapping Missile
+			New Objects : Create Rocket Trail at (0,0) from Missile
+
+* Upon pressing "T"
+	Group.Bad : Destroy
+
+[ player (2) ]
+
+	* NOT Repeat while left mouse-key is pressed
+	+ Restrict actions for 00''-01
+		Laser Heat : Subtract 1 from Counter
+		Active : Destroy
+
+	* Collision between misslebomb and missbomtarget
+	+ Alterable Value A( "misslebomb" ) = Alterable Value A( "missbomtarget" )
+		 Sound : Set volume of sample explosion-36210 to 20
+		missbomtarget : Destroy
+		misslebomb : Destroy
+		New Objects : Create lrgexplosion at (0,0) from misslebomb
+		New Objects : Create Active 4 at (0,0) from misslebomb
+		Active 4 : Set Alterable Value A to 25
+		 Sound : Play sample explosion-36210 (uninteruptable) on channel #40
+
+	* Restrict actions for 00''-01
+
+	* plyrcursor is in the play area 
+	+ Restrict actions for 00''-05
+		New Objects : Create plyrcursor 2 at (1,0) from plyrcursor
+
+	* Always
+		plyrcursor : Set X position to XMouse
+		plyrcursor : Set Y position to YMouse
+		Active : Set position at (0,0) from plyershoot 2
+
+	[ laser shot ]
+
+		* On loop "shoot"
+			Active : Launch plyrlaser at speed 200 toward (0,0) from plyrcursor
+			 Sound : Set volume of sample laserShoot to 20
+			 Sound : Play sample laserShoot (uninteruptable) on channel #47
+
+		* Repeat while left mouse-key is pressed
+		+ Laser Heat <= 99
+		+ Only one action when event loops
+			Laser Heat : Add 0.5 to Counter
+			Special : Start loop "shoot" 1 times
+
+		* Only one action when event loops
+		+ Repeat while left mouse-key is pressed
+			New Objects : Create Active at (0,-5) from plyershoot 2
+
+* Collision between plyrlaser and dropbomb
+	 Sound : Set volume of sample explosion-91872 to 20
+	dropbomb : Destroy
+	New Objects : Create smallexplosion at (0,0) from plyrlaser
+	plyrlaser : Destroy
+	Score : Add pval( "dropbomb" ) + 15 to Counter
+	New Objects : Create lrgexplosion at (0,0) from dropbomb
+	 Sound : Play sample explosion-91872 on channel #44
+
+* Collision between photonshot and plyrlaser
+	plyrlaser : Destroy
+	New Objects : Create photonexplosion at (0,0) from photonshot
+	Score : Add pval( "photonshot" ) + 25 to Counter
+	photonshot : Destroy
+	New Objects : Create lrgexplosion at (0,0) from photonshot
+	 Sound : Play sample overheadexplosion-89709 on channel #46
+	 Sound : Set volume of sample overheadexplosion-89709 to 20
+
+* Collision between plyrlaser and photontrail
+	photontrail : Destroy
+	Score : Add 1 to Counter
+
+* plyrlaser leaves the play area
+	plyrlaser : Destroy
+
+* Collision between plyrlaser and bombshooter
+	bombshooter : Destroy
+	 Sound : Set volume of sample deep-boom-95839 to 20
+	New Objects : Create lrgexplosion at (0,1) from bombshooter
+	 Sound : Play sample deep-boom-95839 on channel #45
+	plyrlaser : Destroy
+	Score : Add pval( "bombshooter" ) to Counter
+
+* speedy is overlapping vessel creator
+	speedy : Set direction to ...............
+
+* speedy is overlapping vessel creator 2
+	speedy : Set direction to ...........
+
+[ stars ]
+
+	// We set the star counter Initial 40, Minimum 0, and Maximum 40 (This is how many stars we want to to show up on the screen).
+	// 
+	// Each time a star is created, we subtract 1 from the Star Counter, because if we don't the event will keep looping.
+	// 
+	// We also make the stars invisible so the user will not have a siezure while
+	// looking at all the stars being created.
+	// 
+	// Our screen is 640 X 480 so we want the stars to be set inside these 
+	// boundries. The formula used will do this.
+
+	* StarCounter > 0
+		Star : Make invisible
+		Star : Set X position to Random(1000) + 10
+		Star : Set Y position to Random(700) + 20
+		New Objects : Create Star at (1099,563) from stars
+		StarCounter : Subtract 1 from Counter
+
+	// When the Star Counter reaches 0, we no longer are creating stars and
+	// now we make the stars visible again.
+
+	* StarCounter = 0
+	+ Run this event once
+		Star : Reappear
+
+	[ fade in ]
+
+		* Upon pressing "Space bar"
+		+ id of Star = Random(NObjects( "Star" ))
+			Star : Set semi-transparency to 0
+
+		* Repeat while "Space bar" is pressed
+			Star : Set semi-transparency to SemiTrans( "Star" ) - 2
+
+	[ reappearing random ]
+
+		* Always
+			Star : Set semi-transparency to SemiTrans( "Star" ) + 1
+			Star : Spread value 0 in id
+
+		* Every Random(3)
+		+ id of Star = Random(NObjects( "Star" ))
+			Star : Set semi-transparency to 0
+			 Star : Replace color RGB(255,255,0) by RGB(0,0,192)
+
+		* Star is in the play area 
+			Star : Set X position to X( "Star" ) + RRandom( - 0.5, 0.5 )
+
+* Missile is in the play area 
+	Missile : Sub 1 from tte
+
+* tte of Missile <= 0
+	Missile : Destroy
+	New Objects : Create lrgexplosion at (0,0) from Missile
+
+* Collision between Group.Bad and lrgexplosion
+	Group.Bad : Destroy
+
+* Collision between plyrlaser and speedy
+	 Sound : Set volume of sample explosion-36210 to 20
+	New Objects : Create lrgexplosion at (0,0) from speedy
+	 Sound : Play sample explosion-36210 on channel #45
+	plyrlaser : Destroy
+	speedy : Destroy
+	Score : Add pval( "speedy" ) to Counter
+
+* NOT playerbase is overlapping Active 3
+
+* Upon pressing "P"
+	playerbase : Set hp to 1
+
+* NOT rainbeam is overlapping playerbase
+	rainbeam : Destroy
+
+* NOT speedy is overlapping Active 3
+	speedy : Set speed to 250
+* Always
+	 Missile : Bring to front
+	New Objects : Create Rocket Trail at (0,0) from Missile
+	 Rocket Trail : Bring to back
+
+* Always
+	Rocket Trail : Add 10 to Alterable Value A
+	 Rocket Trail : Set alpha-blending coefficient to Alterable Value A( "Rocket Trail" )
+
+* Alterable Value A of Rocket Trail > 250
+	Rocket Trail : Destroy
+</BEGINSOURCECODE>
+

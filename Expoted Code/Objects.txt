@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<DocType>Source Code</DocType>
+<CurrentDateStamp>Friday August 2 2024 3:22 PM
+<GameName></GameName>
+<CodeName>Bomb Shotters</CodeName>
+<version>PREALPHA version0.0003</version>
+<NOTES>this is the ouput from the "export to text" option in ClickTeam Fusion 2.5+ </NOTES>
+<BIGINOBJECTDEFINITION>
+
++ Object Definitions
+	+ plyrcursor
+		- Type: Active
+		- Images hash: 0x4222
+	+ plyershoot
+		- Type: Active
+		- Images hash: 0xAA79
+		+ Alterable Values
+			oneups: 1
+			control: 0
+			resource: 100
+			Alterable Value D: 0
+			Alterable Value E: 0
+			playerhpval: 0
+	+ bombshooter
+		- Type: Active
+		- Images hash: 0x24EF
+		- Qualifiers: Bad
+		+ Alterable Values
+			Alterable Value A: 0
+			Alterable Value B: 0
+			pval: 200
+	+ dropbomb
+		- Type: Active
+		- Images hash: 0xB49D
+		- Qualifiers: Generic 1
+		+ Alterable Values
+			Alterable Value A: 0
+			Alterable Value B: 0
+			pval: 0
+	+ photonshot
+		- Type: Active
+		- Images hash: 0x2C28
+		- Qualifiers: Generic 1, Bad
+		+ Alterable Values
+			Alterable Value A: 0
+			Alterable Value B: 0
+			pval: 5
+	+ eshot1
+		- Type: Active
+		- Images hash: 0xCF0A
+	+ eshot2
+		- Type: Active
+		- Images hash: 0xCF0A
+	+ eshot3
+		- Type: Active
+		- Images hash: 0xCF0A
+	+ eshot4
+		- Type: Active
+		- Images hash: 0xCF0A
+	+ misslebomb
+		- Type: Active
+		- Images hash: 0xDC1E
+	+ missbomtarget
+		- Type: Active
+		- Images hash: 0x5F60
+	+ lrgexplosion
+		- Type: Active
+		- Images hash: 0xE98F
+		- Qualifiers: Explosions
+	+ playertargetmarker
+		- Type: Active
+		- Images hash: 0x3315
+	+ plyershoot 2
+		- Type: Active
+		- Images hash: 0x0416
+		+ Alterable Values
+			istarget: 0
+			ismoveable: 0
+			hp: 0
+	+ misslebombcharge
+		- Type: Counter
+	+ photontrail
+		- Type: Active
+		- Images hash: 0x86D1
+	+ energyshield
+		- Type: Active
+		- Images hash: 0xE709
+	+ shieldcharge
+		- Type: Counter
+	+ photonexplosion
+		- Type: Active
+		- Images hash: 0x0373
+		- Qualifiers: Explosions
+	+ Laser Heat
+		- Type: Counter
+	+ Score
+		- Type: Counter
+		- Images hash: 0x2876
+	+ playerbase
+		- Type: Active
+		- Images hash: 0x2282
+		+ Alterable Values
+			istarget: 0
+			Alterable Value B: 0
+			Alterable Value C: 0
+			hp: 0
+	+ plyrcursor 2
+		- Type: Active
+		- Images hash: 0x4222
+	+ Ground
+		- Type: Active
+		- Images hash: 0x5666
+	+ laserpalacestop
+		- Type: Active
+		- Images hash: 0x738E
+	+ laserpalacestop 2
+		- Type: Active
+		- Images hash: 0x738E
+	+ Active
+		- Type: Active
+		- Images hash: 0x4008
+	+ vessel creator
+		- Type: Active
+		- Images hash: 0xA641
+	+ Active 2
+		- Type: Active
+		- Images hash: 0xBB46
+	+ vessel creator 2
+		- Type: Active
+		- Images hash: 0xA641
+	+ Hp Bar
+		- Type: Counter
+	+ speedy
+		- Type: Active
+		- Images hash: 0x94CB
+		- Qualifiers: Bad
+		+ Alterable Values
+			payloadtime: 15
+			Alterable Value B: 0
+			shouldfireon1: 0
+			pval: 300
+		+ Alterable Flags
+			enemyval: 0
+			releasepayload: 0
+	+ rainbeam
+		- Type: Active
+		- Images hash: 0xE336
+	+ Physics - Engine
+		- Type: Physics - Engine
+	+ Rocket Trail
+		- Type: Active
+		- Images hash: 0x68E1
+		+ Alterable Values
+			Alterable Value A: 0
+	+ Active 3
+		- Type: Active
+		- Images hash: 0x042A
+	+ d85786b4a437da1e1ab902857d328fa1
+		- Type: Active
+		- Images hash: 0xBB21
+	+ Active 4
+		- Type: Active
+		- Images hash: 0xFACD
+		- Qualifiers: Explosions
+	+ Counter 2
+		- Type: Counter
+		- Images hash: 0x1C7A
+	+ stars
+		- Type: Active
+		- Images hash: 0xD3D7
+	+ String
+		- Type: String
+		+ Texts
+			1: Get Ready
+	+ Missile
+		- Type: Active
+		- Images hash: 0x62CE
+		+ Alterable Values
+			DDistance: 9999999
+			Paired Object: 0
+			TargetX: 0
+			TargetY: 0
+			tte: 100
+	+ plyrlaser
+		- Type: Active
+		- Images hash: 0x3967
+		- Qualifiers: Bullets
+	+ Active 5
+		- Type: Active
+		- Images hash: 0xEDDA
+	+ StarCounter
+		- Type: Counter
+		- Images hash: 0x1C7A
+	+ Star
+		- Type: Active
+		- Images hash: 0xBF00
+		+ Alterable Values
+			id: 0
++ Layer #1
+	- stars [-142, 5]
++ Layer #2
+	- plyrcursor [519, 684]
+	- plyershoot [97, 16]
+	- plyershoot 2 [515, 722]
+	- eshot1 [70, -29]
+	- eshot2 [70, -29]
+	- eshot3 [70, -29]
+	- eshot4 [70, -29]
+	- misslebombcharge [351, 747]
+	- shieldcharge [369, 711]
+	- Laser Heat [369, 729]
+	- Score [75, 27]
+	- Ground [512, 802]
+	- laserpalacestop [420, 594]
+	- laserpalacestop 2 [585, 594]
+	- vessel creator [1086, 570]
+	- vessel creator 2 [-19, 571]
+	- Active 2 [-234, 698]
+	- Hp Bar [369, 693]
+	- playerbase [122, 718]
+	- playerbase [188, 721]
+	- playerbase [821, 710]
+	- playerbase [721, 714]
+	- playerbase [46, 724]
+	- playerbase [277, 707]
+	- playerbase [921, 718]
+	- playerbase [649, 716]
+	- rainbeam [-155, 417]
+	- Physics - Engine [4, 10]
+	- Rocket Trail [274, -45]
+	- Active 3 [-103, 291]
+	- d85786b4a437da1e1ab902857d328fa1 [1280, -86]
+	- Counter 2 [434, 615]
+	- String [426, 306]
+	- photonshot [-254, 248]
+	- Missile [374, -50]
+	- Active 5 [-278, 115]
++ Layer #3
+	- StarCounter [605, 615]
+	- Star [-295, 37]
+	- plyrlaser [-286, -150]
+<BIGINOBJECTDEFINITION>
